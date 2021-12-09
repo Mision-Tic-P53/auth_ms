@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.contrib.auth.hashers import make_password
 
 class UserManager(BaseUserManager):
+
     def create_user(self, username, password=None):
         """
         Creates and saves a user with the given username and password.
@@ -27,11 +28,21 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # These fields tie to the roles!
+    ADMIN = 1
+    CLIENT = 2
+
+    ROLE_CHOICES = (
+        (ADMIN, 'Admin'),
+        (CLIENT, 'Client'),
+    )
+
     id = models.BigAutoField(primary_key=True)
     username = models.CharField('Username', max_length = 15, unique=True)
     password = models.CharField('Password', max_length = 256)
     name = models.CharField('Name', max_length = 30)
     email = models.EmailField('Email', max_length = 100)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True, default=2)
 
     def save(self, **kwargs):
         some_salt = 'mMUj0DrIK6vgtdIYepkIxN' 
